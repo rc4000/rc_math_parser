@@ -87,6 +87,13 @@ vector<string> separar_por_operacion(string exp){
 	exp = replace_with(exp,"div","|");
 	exp = replace_with(exp,"mod","%");
 	exp = replace_with(exp,"pow","^");
+	exp = replace_with(exp,"**","^");
+	exp = replace_with(exp,"--","+");
+	exp = replace_with(exp,"+-","-");
+	exp = replace_with(exp,"-+","-");
+
+
+
 
 	for(int i=0;i<exp.length();i++){
 
@@ -145,7 +152,7 @@ vector<string> separar_por_operacion(string exp){
 		resultado.push_back(data_a_cargar);
 	}
 
-	imprimir_elementos(resultado);
+	//imprimir_elementos(resultado);
 
 	return resultado;
 }
@@ -885,13 +892,13 @@ vector<string> resolver_parentesis(vector<string> exp_vec){
 			}
 
 
-			while(hay_productos(aux_exp)){
-				aux_exp = resolver_productos(aux_exp);
+			while(hay_divisiones(aux_exp)){
+				aux_exp = resolver_divisiones(aux_exp);
 			}
 
 
-			while(hay_divisiones(aux_exp)){
-				aux_exp = resolver_divisiones(aux_exp);
+			while(hay_productos(aux_exp)){
+				aux_exp = resolver_productos(aux_exp);
 			}
 
 
@@ -931,6 +938,53 @@ vector<string> resolver_parentesis(vector<string> exp_vec){
 }
 
 
+vector<string> resolver_signos(vector<string> exp_vec){
+
+	vector<string> resultado;
+
+	for(int i=0;i<exp_vec.size();i++){
+		if(exp_vec[i][0]=='+'){
+			
+			if(exp_vec[i].length() > 1){
+				resultado.push_back(exp_vec[i]);
+			}
+
+		}
+		else if(exp_vec[i][0]=='-'){
+
+			if(exp_vec[i].length() > 1){
+				resultado.push_back(exp_vec[i]);
+			}else{
+
+
+				if(exp_vec.size() > i + 1){
+
+					if(exp_vec[i+1][0] == '+'){
+						exp_vec[i+1][0] = '-';
+					}
+					else if(exp_vec[i+1][0] == '-'){
+						exp_vec[i+1][0] = '+';
+					}
+
+				}
+
+			}
+
+		}
+		else{
+
+			resultado.push_back(exp_vec[i]);
+		}
+
+	}
+
+
+	return resultado;
+
+
+}
+
+
 
 
 
@@ -961,13 +1015,13 @@ vector<string> resolver(string exp){
 	}
 
 
-	while(hay_productos(exp_vec)){
-		exp_vec = resolver_productos(exp_vec);
+	while(hay_divisiones(exp_vec)){
+		exp_vec = resolver_divisiones(exp_vec);
 	}
 
 
-	while(hay_divisiones(exp_vec)){
-		exp_vec = resolver_divisiones(exp_vec);
+	while(hay_productos(exp_vec)){
+		exp_vec = resolver_productos(exp_vec);
 	}
 
 
@@ -981,10 +1035,12 @@ vector<string> resolver(string exp){
 	}
 
 	
+	//imprimir_elementos(exp_vec);
 
-	for(int i=0;i<exp_vec.size();i++){
-		cout << "retorno : "<< exp_vec[i] << endl;
-	}
+	exp_vec = resolver_signos(exp_vec);
+
+	//imprimir_elementos(exp_vec);
+
 
 
 	exp_vec = resolver_sumas_y_restas(exp_vec);
@@ -996,16 +1052,8 @@ vector<string> resolver(string exp){
 }
 
 
-
-
-
-
 int main(int argc, char const *argv[])
 {
-	
 	cout << resolver(argv[1])[0] << endl;
-
-
-
 	return 0;
 }
